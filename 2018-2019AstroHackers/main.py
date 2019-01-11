@@ -8,12 +8,11 @@ import datetime
 from time import sleep
 import random
 import os
+#define directory path of this file
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 # Connect to the Sense Hat
 sh = SenseHat()
-
-
 
 # Set a logfile name
 logzero.logfile(dir_path+"/data01.csv")
@@ -38,6 +37,14 @@ img1 = [
     g,g,g,g,g,g,g,g,
 ]
 
+# Set up camera
+cam = PiCamera()
+cam.resolution = (1296,972)
+
+# run a loop for 2 minutes
+photo_counter = 1
+sh.set_pixels(img1)
+
 def active_status():
     """
     A function to update the LED matrix regularly
@@ -56,11 +63,12 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         temperature = round(sh.get_temperature(),4)
         humidity = round(sh.get_humidity(),4)
 
-
         # get latitude and longitude
         lat, lon = get_latlon()
+        
         # Save the data to the file
         logger.info("%s,%s,%s,%s,%s", photo_counter,humidity, temperature, lat, lon )
+        
         # use zfill to pad the integer value used in filename to 3 digits (e.g. 001, 002...)
         cam.capture(dir_path+"/photo_"+ str(photo_counter).zfill(3)+".jpg")
         photo_counter+=1
@@ -68,6 +76,7 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         sleep(15)
         active_status()
         sleep(15)
+        
         # update the current time
         now_time = datetime.datetime.now()
     except Exception as e:
