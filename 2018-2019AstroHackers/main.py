@@ -62,12 +62,13 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         # Read some data from the Sense Hat, rounded to 4 decimal places
         temperature = round(sh.get_temperature(),4)
         humidity = round(sh.get_humidity(),4)
+        pressure = round(sh.get_pressure(),4)
 
         # get latitude and longitude
         lat, lon = get_latlon()
         
         # Save the data to the file
-        logger.info("%s,%s,%s,%s,%s", photo_counter,humidity, temperature, lat, lon )
+        logger.info("%s,%s,%s,%s,%s,%s", photo_counter,humidity, temperature, pressure, lat, lon )
         
         # use zfill to pad the integer value used in filename to 3 digits (e.g. 001, 002...)
         cam.capture(dir_path+"/photo_"+ str(photo_counter).zfill(3)+".jpg")
