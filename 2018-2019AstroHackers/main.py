@@ -56,20 +56,34 @@ def active_status():
     rot = random.choice(orientation)
     # set the rotation
     sh.set_rotation(rot)
-    
+
 while (now_time < start_time + datetime.timedelta(minutes=178)):
     try:
-        # Read some data from the Sense Hat, rounded to 4 decimal places
+        # Read data from the Sense Hat, rounded to 4 decimal places
         temperature = round(sh.get_temperature(),4)
         humidity = round(sh.get_humidity(),4)
         pressure = round(sh.get_pressure(),4)
 
+        ##calculate the distance from the ISS to the sun
+        #calculation of the distance from the sun to an observer
+        observer
+        sun = ephem.Sun()
+
+        #Iss distance from the same observer
+        name = "ISS (ZARYA)"
+        line1 = "1 25544U 98067A   18032.92935684  .00002966  00000-0  52197-4 0  99911 25544U 98067A   18032.92935684  .00002966  00000-0  52197-4 0  9991"
+        line2 = "2 25544  51.6438 332.9972 0003094  62.2964  46.0975 15.54039537 97480"
+
+        iss = ephem.readtle(name, line1, line2)
+        iss.compute()
+        iss_distance = iss.elevation # Geocentric height of iss above sea level (m)
+
         # get latitude and longitude
         lat, lon = get_latlon()
-        
+
         # Save the data to the file
         logger.info("%s,%s,%s,%s,%s,%s", photo_counter,humidity, temperature, pressure, lat, lon )
-        
+
         # use zfill to pad the integer value used in filename to 3 digits (e.g. 001, 002...)
         cam.capture(dir_path+"/photo_"+ str(photo_counter).zfill(3)+".jpg")
         photo_counter+=1
@@ -77,7 +91,7 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         sleep(15)
         active_status()
         sleep(15)
-        
+
         # update the current time
         now_time = datetime.datetime.now()
     except Exception as e:
