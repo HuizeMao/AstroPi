@@ -1,13 +1,14 @@
+from sense_hat import SenseHat
+from picamera import PiCamera
+from logzero import logger
+from time import sleep
+import datetime
 import logging
 import logzero
-from logzero import logger
-from sense_hat import SenseHat
-import ephem
-from picamera import PiCamera
-import datetime
-from time import sleep
 import random
+import ephem
 import os
+
 #define directory path of this file
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -37,12 +38,8 @@ img1 = [
     g,g,g,g,g,g,g,g,
 ]
 
-# Set up camera
-cam = PiCamera()
-cam.resolution = (1296,972)
 
 # run a loop for 2 minutes
-photo_counter = 1
 sh.set_pixels(img1)
 
 def active_status():
@@ -63,10 +60,12 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         temperature = round(sh.get_temperature(),4)
         humidity = round(sh.get_humidity(),4)
         pressure = round(sh.get_pressure(),4)
+        orientation = sense.get_orientation_radians()
+        (roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
+        raw = sense.get_compass_raw() #A dictionary with x, y and z, representing the magnetic intensity of the axis in microteslas (µT).
 
         ##calculate the distance from the ISS to the sun
         #calculation of the distance from the sun to an observer
-        observer
         sun = ephem.Sun()
 
         #Iss distance from the same observer
@@ -76,19 +75,12 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
 
         iss = ephem.readtle(name, line1, line2)
         iss.compute()
-        iss_distance = iss.elevation # Geocentric height of iss above sea level (m)
-
-        # get latitude and longitude
-        lat, lon = get_latlon()
+        IssDistanceToEarthSeaLevel = iss.elevation # Geocentric height of iss above sea level (m)
+        lat,lon = iss.sublat, iss.sublong #ISS position above earth
 
         # Save the data to the file
-        logger.info("%s,%s,%s,%s,%s,%s", photo_counter,humidity, temperature, pressure, lat, lon )
+        logger.info("%s,%s,%s,%s,%s,%s,%s,%s", orientation, lat,lon, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,row)
 
-        # use zfill to pad the integer value used in filename to 3 digits (e.g. 001, 002...)
-        cam.capture(dir_path+"/photo_"+ str(photo_counter).zfill(3)+".jpg")
-        photo_counter+=1
-        active_status()
-        sleep(15)
         active_status()
         sleep(15)
 
