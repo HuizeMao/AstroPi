@@ -67,9 +67,9 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         humidity = round(sh.get_humidity(),4)
         pressure = round(sh.get_pressure(),4)
         orientation = sh.get_orientation_radians()
-        #(roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
+        (roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
         raw = sh.get_compass_raw() #A dictionary with x, y and z, representing the magnetic intensity of the axis in microteslas (µT).
-
+        (mag_x,mag_y,mag_z) = (raw['x'],raw['y'],raw['z'])
         ##calculate the distance from the ISS to the sun
         #calculation of the distance from the sun to an observer
         sun = ephem.Sun()
@@ -85,7 +85,7 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         lat,lon = iss.sublat, iss.sublong #ISS position above earth
 
         # Save the data to the file
-        logger.info("%s,%s,%s,%s,%s,%s,%s,%s", orientation, lat,lon, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,raw)
+        logger.info("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", roll_x,pitch_y,yaw_z, lat,lon, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,mag_x,mag_y,mag_z)
 
         active_status()
         sleep(15)
