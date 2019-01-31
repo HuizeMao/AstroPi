@@ -7,6 +7,7 @@ import logging
 import logzero
 import random
 import ephem
+import csv
 import os
 
 #define directory path of this file
@@ -61,7 +62,7 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         humidity = round(sh.get_humidity(),4)
         pressure = round(sh.get_pressure(),4)
         orientation = sense.get_orientation_radians()
-        (roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
+        #(roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
         raw = sense.get_compass_raw() #A dictionary with x, y and z, representing the magnetic intensity of the axis in microteslas (µT).
 
         ##calculate the distance from the ISS to the sun
