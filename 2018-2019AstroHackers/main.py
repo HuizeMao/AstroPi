@@ -55,15 +55,20 @@ def active_status():
     # set the rotation
     sh.set_rotation(rot)
 
+#create a datetime var to store the start time
+start_time = datetime.datetime.now()
+#create a datetime var to show the current time
+now_time = datetime.datetime.now()
+
 while (now_time < start_time + datetime.timedelta(minutes=178)):
     try:
         # Read data from the Sense Hat, rounded to 4 decimal places
         temperature = round(sh.get_temperature(),4)
         humidity = round(sh.get_humidity(),4)
         pressure = round(sh.get_pressure(),4)
-        orientation = sense.get_orientation_radians()
+        orientation = sh.get_orientation_radians()
         #(roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
-        raw = sense.get_compass_raw() #A dictionary with x, y and z, representing the magnetic intensity of the axis in microteslas (µT).
+        raw = sh.get_compass_raw() #A dictionary with x, y and z, representing the magnetic intensity of the axis in microteslas (µT).
 
         ##calculate the distance from the ISS to the sun
         #calculation of the distance from the sun to an observer
@@ -80,7 +85,7 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         lat,lon = iss.sublat, iss.sublong #ISS position above earth
 
         # Save the data to the file
-        logger.info("%s,%s,%s,%s,%s,%s,%s,%s", orientation, lat,lon, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,row)
+        logger.info("%s,%s,%s,%s,%s,%s,%s,%s", orientation, lat,lon, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,raw)
 
         active_status()
         sleep(15)
