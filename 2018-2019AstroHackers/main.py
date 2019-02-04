@@ -142,7 +142,7 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         logger.info("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",now_time,roll_x,pitch_y,yaw_z, theta_prime,phi_prime, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,mag_x,mag_y,mag_z, ISS_to_Sun)
 
         active_status()
-        sleep(10)
+        sleep(5)
 
         # update the current time
         now_time = datetime.datetime.now()
