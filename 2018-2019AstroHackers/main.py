@@ -20,14 +20,14 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sh = SenseHat()
 
 # Set a logfile name
-logzero.logfile(dir_path+"/data01.csv")
+logzero.logfile(dir_path+"/data_test.csv")
 
 # Set a custom formatter
-formatter = logging.Formatter('%(name)s - %(asctime)-15s - %(levelname)s: %(message)s');
+formatter = logging.Formatter('');
 logzero.formatter(formatter)
 
 #write header
-logger.info("time, roll_x,pitch_y,yaw_z, lattitude,longitude, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,mag_x,mag_y,mag_z, ISS_to_Sun")
+logger.info("time,ISS_roll_x(rad),ISS_pitch_y(rad),yaw_z(rad),ISS_lattitude,ISS_longitude, humidity,temperature(C),pressure(Millibars), IssDistanceToEarthSeaLevel(km),magint_x(microteslas),magint_y(microteslas),magint_z(microteslas), ISS_to_Sun(km)")
 
 # define some colours - keep brightness low
 g = [0,50,0]
@@ -99,8 +99,10 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
         pressure = round(sh.get_pressure(),4)
         orientation = sh.get_orientation_radians()
         (roll_x,pitch_y,yaw_z) = (orientation['roll'], orientation['pitch'], orientation['yaw']) #orientation in three axis
+        (roll_x,pitch_y,yaw_z) = (round(roll_x,4), round(pitch_y,4), round(yaw_z,4))
         raw = sh.get_compass_raw() #A dictionary with x, y and z, representing the magnetic intensity of the axis in microteslas (µT).
         (mag_x,mag_y,mag_z) = (raw['x'],raw['y'],raw['z'])
+        (mag_x,mag_y,mag_z) = (round(mag_x,4),round(mag_y,4),round(mag_z,4))
 
 
         ###calculate the distance from the ISS to the sun using spherical coordinates
@@ -135,12 +137,12 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
 
         ##compute distance from the ISS to the sun
         ISS_to_Sun = SphericalDistance(r,theta,phi,r_prime,theta_prime,phi_prime)
-
+        ISS_to_Sun = round(ISS_to_Sun,4)
         # Save the data to the file
-        logger.info("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", roll_x,pitch_y,yaw_z, theta_prime,phi_prime, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,mag_x,mag_y,mag_z, ISS_to_Sun)
+        logger.info("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",now_time,roll_x,pitch_y,yaw_z, theta_prime,phi_prime, humidity,temperature,pressure, IssDistanceToEarthSeaLevel,mag_x,mag_y,mag_z, ISS_to_Sun)
 
         active_status()
-        sleep(15)
+        sleep(10)
 
         # update the current time
         now_time = datetime.datetime.now()
