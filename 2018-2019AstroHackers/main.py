@@ -20,7 +20,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sh = SenseHat()
 
 # Set a logfile name
-logzero.logfile(dir_path+"/data_test.csv")
+logzero.logfile(dir_path+"/dataset.csv")
 
 # Set a custom formatter
 formatter = logging.Formatter('');
@@ -146,6 +146,6 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
 
         # update the current time
         now_time = datetime.datetime.now()
-        
+
     except Exception as e:
         logger.error("An error occurred: " + str(e))
