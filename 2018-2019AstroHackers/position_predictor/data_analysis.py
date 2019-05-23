@@ -14,13 +14,16 @@ pd.set_option('display.width', 1000)"""
 cwd = os.getcwd()
 
 our_data = pd.read_csv('our_data.csv')
-
+one_data = pd.read_csv('Columbus_one.csv')
+two_data = pd.read_csv('Columbus_two.csv')
 #pd.Dataframe.replace(our_data[["Theta"]],Theta,regex=False)
 
 
-print(our_data[["Theta"]].head(100))
+#print(our_data[["Theta"]].head(100))
+print(one_data.head())
+print(two_data.head())
 
-our_data.to_csv("our_data.csv",index=False)
+#our_data.to_csv("our_data.csv",index=False)
 
 """our_headers = [
 'Time','Roll(x)','Pitch(y)','Yaw (z)','R','theta','Phi',
