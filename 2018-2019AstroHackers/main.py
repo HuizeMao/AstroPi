@@ -120,6 +120,8 @@ while (now_time < start_time + datetime.timedelta(minutes=178)):
 name = "ISS (ZARYA)"
 line1 = "1 25544U 98067A   19134.56970047  .00001786  00000-0  35909-4 0  9998"
 line2="2 25544  51.6417 168.2377 0001369 352.6849 127.3920 15.52670060170033"
+iss = ephem.readtle(name, line1, line2)
+iss.compute("2016/2/29")
 
         ##compute ISS's spherical coordinates
         #two line elements and name for creating ISS object

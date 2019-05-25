@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import os
@@ -14,16 +15,15 @@ pd.set_option('display.width', 1000)"""
 cwd = os.getcwd()
 
 our_data = pd.read_csv('our_data.csv')
-one_data = pd.read_csv('Columbus_one.csv')
-two_data = pd.read_csv('Columbus_two.csv')
+
+columbus_data = pd.read_csv('columbus_data.csv')
 #pd.Dataframe.replace(our_data[["Theta"]],Theta,regex=False)
-
-
 #print(our_data[["Theta"]].head(100))
-print(one_data.head())
-print(two_data.head())
 
-#our_data.to_csv("our_data.csv",index=False)
+print(columbus_data)
+
+
+
 
 """our_headers = [
 'Time','Roll(x)','Pitch(y)','Yaw (z)','R','theta','Phi',
