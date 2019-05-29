@@ -1,4 +1,0 @@
-0db57dcd29c2947d97e2d2bb067ee7e6  /home/pi/mcp-cron/MSL_Expts/theastrohackers/dataset.csv
-e0f486fe2b2bb02d448b6bc731ec2c41  /home/pi/mcp-cron/MSL_Expts/theastrohackers/files.txt
-1f2b8183cd1e469ad3a7ad1eadce49d1  /home/pi/mcp-cron/MSL_Expts/theastrohackers/completed.log
-dff3f341463afaccee47568b6369bd20  /home/pi/mcp-cron/MSL_Expts/theastrohackers/main.py

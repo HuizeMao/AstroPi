@@ -1,4 +1,0 @@
-0db57dcd29c2947d97e2d2bb067ee7e6 theastrohackers_dataset.csv
-e0f486fe2b2bb02d448b6bc731ec2c41 theastrohackers_files.txt
-1f2b8183cd1e469ad3a7ad1eadce49d1 theastrohackers_completed.log
-dff3f341463afaccee47568b6369bd20 theastrohackers_main.py
