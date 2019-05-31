@@ -25,6 +25,7 @@ def graph_2d(dataframe,x,*args):
     plt.show()
 
 our_data = pd.read_csv('our_data.csv')
+our_data = our_data[[100,:]]
 our_data.Time = pd.to_datetime(our_data.Time).dt.time
 columbus_data = pd.read_csv('columbus_data.csv')
 columbus_data.Time = pd.to_datetime(columbus_data.Time).dt.time
@@ -32,7 +33,7 @@ columbus_data.Time = pd.to_datetime(columbus_data.Time).dt.time
 our_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Theta','Phi','R']].mean()) /(our_data[['Theta','Phi','R']].max() - our_data[['Theta','Phi','R']].min())
 #df_norm = (our_data - our_data.mean()) / (our_data.max() - our_data.min())
 ##graph_2d(our_data,'Theta','Phi')
-graph_2d(our_data,'Theta','Roll (x)')
+graph_2d(our_data,'R','Mag X (microteslas)','Mag Y (microteslas)','Mag Z (microteslas)')
 #graph_2d(our_data,"Time","Roll (x)","Pitch (y)","Yaw (z)")
 
 """print(our_data[["Phi"]].max())
