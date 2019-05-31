@@ -33,51 +33,55 @@ y3 = Phi # third coordinate of the spherical coordinate to predict(Theta = longi
 
 #tf.placeholders for the input and output of the network. Placeholders are
 # variables which we need to fill in when we are ready to compute the graph. because they could vary for different dataset input
-X = tf.placeholder(tf.float32)
-Y = tf.placeholder(tf.float32)
+X = tf.placeholder(tf.float32,name='X_input')
+Y = tf.placeholder(tf.float32,name='y_true')
 n_observations = 9677 #number of training examples
 
 #define the variable that the machine learning process is going to learn
 a = tf.Variable(tf.random_normal([1]), name='amplitude') #a: affects the amplitude of the sinusoidal function
 b = tf.Variable(tf.random_normal([1]), name='period') #b: affects the period of the sinusoidal function
 c = tf.Variable(tf.random_normal([1]), name='shifts') #c: affects the position of the sinusoidal function
+d = tf.Variable(tf.random_normal([1]), name='bias') #bias term
 
-#define the predictive model(y_pred = a sin (bx+c))
-Y_pred = tf.multiply(tf.math.sin(tf.add(tf.multiply(b,X),c)),a)
+#define the predictive model( 'y = A sin (B(x - C)) + D' )
+Y_pred =tf.add(tf.multiply(tf.math.sin(tf.multiply(tf.subtract(X,c),b)),a),d)
+#Y_pred = tf.multiply(tf.math.sin(tf.add(tf.multiply(b,X),c)),a)
 
-# %% Loss function will measure the distance difference between our observations
+
+##initializing model
+# %% cost function will measure the 'error' between our observations
 # and predictions we made and average over them.
-cost = tf.reduce_sum(tf.pow(Y_pred - Y, 2)) / (n_observations - 1)
-
+cost = tf.reduce_mean(tf.square(Y_pred - Y))
 
 # %% Use gradient descent to optimize W,b
 # Performs a single step in the negative gradient
 learning_rate = 0.01
 optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
+# Here we tell tensorflow that we want to initialize all
+# the variables in the graph so we can use them
+init = tf.global_variables_initializer()
+
+# starting a new session, and define fulfil all the variables
+sess = tf.Session()
+sess.run(init)
+
+##visualization of the computing graph(for debugging and clearity)
+#tensorboard is activated through:
+"""#tensorboard --logdir=./graphs"""
+writer = tf.summary.FileWriter('./graphs',sess.graph)
+
 ##execute the graph and train
-# %% We create a session to use the graph
-n_epochs = 100
-with tf.Session() as sess:
-    # Here we tell tensorflow that we want to initialize all
-    # the variables in the graph so we can use them
-    sess.run(tf.global_variables_initializer())
-    saver = tf.train.Saver()
+n_epochs = 10000 #number of itertions of corrections of the 'weights'(a,b,c)
+prev_training_cost = 0.0
 
-    # Fit all training data
-    prev_training_cost = 0.0
+for step in range(n_epochs):
+    _, c = sess.run([optimizer, cost], feed_dict={X: x, Y: y}) #for each iteration, correct the weights and get the error_value
+    print (c)
+    # Allow the training to quit if we've reached this threshold(which means the model is pretty accurate already!)
+    if np.abs(prev_training_cost - c) < 0.000001:
+        break
+    prev_training_cost = c #change the currect loss to previous loss
 
-    for epoch_i in range(n_epochs):
-        x = sess.run(x)
-        y = sess.run(y)
-        sess.run(optimizer, feed_dict={X: x, Y: y}) #run one step of gradient descent(correction of a,b,c)
-        training_cost = sess.run(cost, feed_dict={Y_pred: Y_pred, Y: y}) # compute how wrong we are in this iteration
-        print(training_cost)#print the cost every iteration
-
-        # Allow the training to quit if we've reached a minimum
-        if np.abs(prev_training_cost - training_cost) < 0.000001:
-            break
-        prev_training_cost = training_cost
-
-    save_path = saver.save(sess, "/tmp/model.ckpt")#save the model
-    print("Model saved in path: %s" % save_path)
+    #save_path = saver.save(sess, "/tmp/model.ckpt")#save the model
+    #print("Model saved in path: %s" % save_path)
