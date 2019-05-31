@@ -21,7 +21,7 @@ def graph_2d(dataframe,x,*args):
     # gca stands for 'get current axis'
     ax = plt.gca()
     for i in args:
-        dataframe.plot(kind='line',x=x,y=i,ax=ax)
+        dataframe.plot(kind='line',x=x,y=i,ax=ax,title='R(distance)&Theta(Latitude)&Phi(Longitude) Vs Time')
     plt.show()
 
 our_data = pd.read_csv('our_data.csv')
@@ -29,12 +29,21 @@ our_data.Time = pd.to_datetime(our_data.Time).dt.time
 columbus_data = pd.read_csv('columbus_data.csv')
 columbus_data.Time = pd.to_datetime(columbus_data.Time).dt.time
 
+our_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Theta','Phi','R']].mean()) /(our_data[['Theta','Phi','R']].max() - our_data[['Theta','Phi','R']].min())
+#df_norm = (our_data - our_data.mean()) / (our_data.max() - our_data.min())
+##graph_2d(our_data,'Theta','Phi')
+graph_2d(our_data,'Theta','Roll (x)')
+#graph_2d(our_data,"Time","Roll (x)","Pitch (y)","Yaw (z)")
+
+"""print(our_data[["Phi"]].max())
+print(columbus_data[["Phi"]].max())"""
 
 #our_data.to_csv("our_data.csv",index=False, format = )
 
-graph_2d(our_data,"theta","roll")
+#graph_2d(our_data,"R")
 
 
+plt.show()
 """our_data.plot(kind='line',x="Time",y="R",ax =ax)
 plt.show()
 """
