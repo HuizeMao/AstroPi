@@ -10,8 +10,7 @@ import numpy as np
 our_data = pd.read_csv('data_analysis_preprocess/our_data.csv')
 
 ##normalize the position coordinate(y)
-our_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Theta','Phi','R']].mean())
-(our_data[['Theta','Phi','R']].max() - our_data[['Theta','Phi','R']].min())
+our_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Theta','Phi','R']].mean()) / (our_data[['Theta','Phi','R']].max() - our_data[['Theta','Phi','R']].min())
 Theta = np.array(our_data[['Theta']])
 Phi = np.array(our_data[['Phi']])
 R = np.array(our_data[['R']])
@@ -23,6 +22,7 @@ R = np.array(our_data[['R']])
 #define the input predictor that is used to predict the positions(independent variable = time step)
 x = np.arange(19354,step=2) #define x as the amount of seconds has passed since the beginning of the data collection(5:44:18 PM as beginning reference point)
 x = np.reshape(x,(x.shape[0],1)) #reshape in order for model training
+n = x.shape[0] #number of training example
 
 #define targets of the predictor(dependent variable = positional data[y])
 y = R #first coordinate of the spherical coordinate to predict(r = distance from the ISS to the center of Earth)
@@ -49,13 +49,15 @@ Y_pred =tf.add(tf.multiply(tf.math.sin(tf.multiply(tf.subtract(X,c),b)),a),d)
 
 
 ##initializing model
-# %% cost function will measure the 'error' between our observations
-# and predictions we made and average over them.
-cost = tf.reduce_mean(tf.square(Y_pred - Y))
+# Mean Squared Error Cost Function
+cost = tf.reduce_sum(tf.pow(Y_pred-Y, 2)) / (2 * n)
+
+#loss function would be the function that the ML algoirhm will try to optimize on
+loss = tf.losses.mean_squared_error(labels=y2,predictions=Y_pred)
 
 # %% Use gradient descent to optimize W,b
 # Performs a single step in the negative gradient
-learning_rate = 0.01
+learning_rate = 0.001
 optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
 # Here we tell tensorflow that we want to initialize all
@@ -69,19 +71,22 @@ sess.run(init)
 ##visualization of the computing graph(for debugging and clearity)
 #tensorboard is activated through:
 """#tensorboard --logdir=./graphs"""
-writer = tf.summary.FileWriter('./graphs',sess.graph)
+"""writer = tf.summary.FileWriter('./graphs',sess.graph)"""
 
 ##execute the graph and train
-n_epochs = 10000 #number of itertions of corrections of the 'weights'(a,b,c)
-prev_training_cost = 0.0
+epoch = 1000 #number of itertions of corrections of the 'weights'(a,b,c)
 
-for step in range(n_epochs):
-    _, c = sess.run([optimizer, cost], feed_dict={X: x, Y: y}) #for each iteration, correct the weights and get the error_value
-    print (c)
-    # Allow the training to quit if we've reached this threshold(which means the model is pretty accurate already!)
-    if np.abs(prev_training_cost - c) < 0.000001:
-        break
-    prev_training_cost = c #change the currect loss to previous loss
+for step in range(epoch):
+    # Feeding each data point into the optimizer using Feed Dictionary
+        for (_x, _y) in zip(x, y):
+            sess.run(optimizer, feed_dict = {X : _x, Y : _y})
+
+        # Displaying the result after every 50 epochs
+        if (epoch + 1) % 1 == 0:
+            # Calculating the cost a every epoch
+             co = sess.run(cost, feed_dict = {X : x, Y : y})
+             print("Epoch", (epoch + 1), ": cost =", co, "a =", sess.run(a), "b =", sess.run(b), "c =", sess.run(c), "d=",sess.run(d))
+
 
     #save_path = saver.save(sess, "/tmp/model.ckpt")#save the model
     #print("Model saved in path: %s" % save_path)
