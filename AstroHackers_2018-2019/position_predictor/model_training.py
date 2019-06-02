@@ -1,7 +1,4 @@
 ##load all the necessary library
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.linear_model import LinearRegression
-from keras.layers import Input
 import tensorflow as tf
 import pandas as pd
 import numpy as np
@@ -14,7 +11,6 @@ our_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Thet
 Theta = np.array(our_data[['Theta']])
 Phi = np.array(our_data[['Phi']])
 R = np.array(our_data[['R']])
-
 
 ###training process of the model
 
@@ -35,7 +31,6 @@ y3 = Phi # third coordinate of the spherical coordinate to predict(Theta = longi
 # variables which we need to fill in when we are ready to compute the graph. because they could vary for different dataset input
 X = tf.placeholder(tf.float32,name='X_input')
 Y = tf.placeholder(tf.float32,name='y_true')
-n_observations = 9677 #number of training examples
 
 #define the variable that the machine learning process is going to learn
 a = tf.Variable(tf.random_normal([1]), name='amplitude') #a: affects the amplitude of the sinusoidal function
@@ -52,9 +47,6 @@ Y_pred =tf.add(tf.multiply(tf.math.sin(tf.multiply(tf.subtract(X,c),b)),a),d)
 # Mean Squared Error Cost Function
 cost = tf.reduce_sum(tf.pow(Y_pred-Y, 2)) / (2 * n)
 
-#loss function would be the function that the ML algoirhm will try to optimize on
-loss = tf.losses.mean_squared_error(labels=y2,predictions=Y_pred)
-
 # %% Use gradient descent to optimize W,b
 # Performs a single step in the negative gradient
 learning_rate = 0.001
@@ -63,6 +55,9 @@ optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 # Here we tell tensorflow that we want to initialize all
 # the variables in the graph so we can use them
 init = tf.global_variables_initializer()
+
+#define saver object to save the model
+saver = tf.train.Saver()
 
 # starting a new session, and define fulfil all the variables
 sess = tf.Session()
@@ -74,19 +69,24 @@ sess.run(init)
 """writer = tf.summary.FileWriter('./graphs',sess.graph)"""
 
 ##execute the graph and train
-epoch = 1000 #number of itertions of corrections of the 'weights'(a,b,c)
+epoch = 200 #number of itertions of corrections of the 'weights'(a,b,c)
+
+saver.restore(sess,"models/theta_predictor.ckpt") #restore variables
 
 for step in range(epoch):
     # Feeding each data point into the optimizer using Feed Dictionary
-        for (_x, _y) in zip(x, y):
-            sess.run(optimizer, feed_dict = {X : _x, Y : _y})
+    for (_x, _y) in zip(x, y2):
+        sess.run(optimizer, feed_dict = {X : _x, Y : _y})
 
-        # Displaying the result after every 50 epochs
-        if (epoch + 1) % 1 == 0:
-            # Calculating the cost a every epoch
-             co = sess.run(cost, feed_dict = {X : x, Y : y})
-             print("Epoch", (epoch + 1), ": cost =", co, "a =", sess.run(a), "b =", sess.run(b), "c =", sess.run(c), "d=",sess.run(d))
+    # Displaying the result after every 50 epochs
+    if (epoch + 1) % 1 == 0:
+        # Calculating the cost a every epoch
+        co = sess.run(cost, feed_dict = {X : x, Y : y2})
+        print("Epoch", (epoch + 1), ": cost =", co, "a =", sess.run(a), "b =", sess.run(b), "c =", sess.run(c), "d=",sess.run(d))
 
+##print(sess.run(Y_pred, feed_dict = {X : x, Y : y2}))
 
-    #save_path = saver.save(sess, "/tmp/model.ckpt")#save the model
-    #print("Model saved in path: %s" % save_path)
+###save path
+##save_path = saver.save(sess, "model/r_predictor.ckpt")#save the model(that predicts r)
+save_path = saver.save(sess, "models/theta_predictor.ckpt")#save the model(that predicts theta)
+##save_path = saver.save(sess, "model/phi_predictor.ckpt")#save the model(that predicts phi)
