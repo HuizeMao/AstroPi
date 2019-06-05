@@ -70,7 +70,7 @@ sess.run(init)
 """writer = tf.summary.FileWriter('./graphs',sess.graph)"""
 
 ##execute the graph and train (uses mini-batch, which means it trains a sample[100] of th entire data in one iteration and eventually will cover every sub-sample)
-epoch = 3 #number of itertions of corrections of the 'weights'(a,b,c)
+epoch = 100 #number of itertions of corrections of the 'weights'(a,b,c)
 batch_size = 100 #sample size
 n_batches = int(np.ceil(m / batch_size)) #number of samples
 
@@ -83,7 +83,7 @@ def fetch_batch(epoch, batch_index, batch_size):
     # Define a batch X based on previous indices
     X_batch = x[indices]
     # y batch
-    y_batch = y[indices-2] #the result shows that the batch doesn't match up, and the index are 2 different from each other, therefore the group decided just minus two here to fix the error
+    y_batch = y2[indices-2] #the result shows that the batch doesn't match up, and the index are 2 different from each other, therefore the group decided just minus two here to fix the error
     return X_batch, y_batch
 
 saver.restore(sess,"models/theta_predictor.ckpt") #restore variables
@@ -102,6 +102,7 @@ for step in range(epoch):
         co = sess.run(cost, feed_dict = {X : x, Y : y2})
         print("Epoch", (epoch + 1), ": cost =", co, "a =", sess.run(a), "b =", sess.run(b), "c =", sess.run(c), "d=",sess.run(d))
 
+print(sess.run(cost, feed_dict = {X : x, Y : y2}))
 ##print(sess.run(Y_pred, feed_dict = {X : x, Y : y2}))
 
 ###save path
