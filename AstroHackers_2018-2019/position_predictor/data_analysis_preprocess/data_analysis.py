@@ -32,7 +32,7 @@ columbus_data.Time = pd.to_datetime(columbus_data.Time).dt.time
 columbus_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Theta','Phi','R']].mean()) /(our_data[['Theta','Phi','R']].max() - our_data[['Theta','Phi','R']].min())
 #df_norm = (our_data - our_data.mean()) / (our_data.max() - our_data.min())
 ##graph_2d(our_data,'Theta','Phi')
-graph_2d(columbus_data,'Time','accel_x,','accel_y','accel_z')
+graph_2d(our_data,'Time','Theta')
 #graph_2d(our_data,"Time","Roll (x)","Pitch (y)","Yaw (z)")
 
 """print(our_data[["Phi"]].max())
