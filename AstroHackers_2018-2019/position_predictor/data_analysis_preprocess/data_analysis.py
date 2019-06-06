@@ -11,6 +11,8 @@ import os
 """pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)"""
+x = np.arange(19354,step=2) #define x as the amount of seconds has passed since the beginning of the data collection(5:44:18 PM as beginning reference point)
+x = np.reshape(x,(x.shape[0],1)) #reshape in order for model training
 
 #http://www.isstracker.com/historical site for look up ISS positions
 #https://projects.raspberrypi.org/en/projects/astro-pi-flight-data-analysis/8 ESA site
@@ -32,13 +34,13 @@ columbus_data.Time = pd.to_datetime(columbus_data.Time).dt.time
 columbus_data[['Theta','Phi','R']] = (our_data[['Theta','Phi','R']] - our_data[['Theta','Phi','R']].mean()) /(our_data[['Theta','Phi','R']].max() - our_data[['Theta','Phi','R']].min())
 #df_norm = (our_data - our_data.mean()) / (our_data.max() - our_data.min())
 ##graph_2d(our_data,'Theta','Phi')
-graph_2d(our_data,'Time','Theta')
+graph_2d(our_data,'x','Theta')
 #graph_2d(our_data,"Time","Roll (x)","Pitch (y)","Yaw (z)")
 
 """print(our_data[["Phi"]].max())
 print(columbus_data[["Phi"]].max())"""
 
-#our_data.to_csv("our_data.csv",index=False, format = )
+#our_data.to_csv("our_data.csv",index=False)
 
 #graph_2d(our_data,"R")
 
